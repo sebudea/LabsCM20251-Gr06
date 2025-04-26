@@ -38,6 +38,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.compose.ui.res.stringResource
 
 
 class PersonalDataActivity : ComponentActivity() {
@@ -46,7 +51,11 @@ class PersonalDataActivity : ComponentActivity() {
         setContent {
             MaterialTheme {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                    PersonalDataScreen()
+                    val navController = rememberNavController()
+                    NavHost(navController = navController, startDestination = "personal_data") {
+                        composable("personal_data") { PersonalDataScreen(navController = navController) }
+                        composable("contact_data") { ContactDataScreen() }
+                    }
                 }
             }
         }
@@ -55,7 +64,7 @@ class PersonalDataActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PersonalDataScreen() {
+fun PersonalDataScreen(navController: NavController) {
     var nombres by remember { mutableStateOf("") }
     var apellidos by remember { mutableStateOf("") }
     var fechaNacimiento by remember { mutableStateOf("") }
@@ -63,11 +72,9 @@ fun PersonalDataScreen() {
     var gradoEscolaridadSeleccionado by remember { mutableStateOf("") }
     val context = LocalContext.current
     var intentoValidacion by remember { mutableStateOf(false) }
-
     val nombresError = intentoValidacion && nombres.isBlank()
     val apellidosError = intentoValidacion && apellidos.isBlank()
     val fechaNacimientoError = intentoValidacion && fechaNacimiento.isBlank()
-
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
@@ -77,7 +84,7 @@ fun PersonalDataScreen() {
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Información Personal", style = MaterialTheme.typography.headlineMedium, modifier = Modifier.padding(bottom = 16.dp))
+        Text(stringResource(R.string.personal_info_title), style = MaterialTheme.typography.headlineMedium, modifier = Modifier.padding(bottom = 16.dp))
 
         if (isLandscape) {
             Row(
@@ -88,9 +95,9 @@ fun PersonalDataScreen() {
                 CampoConIcono(
                     value = nombres,
                     onValueChange = { nombres = it },
-                    label = "Nombres",
+                    label = stringResource(R.string.name_label),
                     icono = Icons.Default.Person,
-                    contentDescriptionIcono = "Icono de Nombres",
+                    contentDescriptionIcono = stringResource(R.string.name_label),
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Text,
                         capitalization = KeyboardCapitalization.Sentences,
@@ -98,15 +105,15 @@ fun PersonalDataScreen() {
                         imeAction = ImeAction.Done
                     ),
                     isError = nombresError,
-                    errorMessage = if (nombresError) "Este campo es obligatorio" else "",
-                    modifier = Modifier.weight(1f) // Ocupa la mitad del espacio disponible
+                    errorMessage = if (nombresError) stringResource(R.string.required_field) else "",
+                    modifier = Modifier.weight(1f)
                 )
                 CampoConIcono(
                     value = apellidos,
                     onValueChange = { apellidos = it },
-                    label = "Apellidos",
+                    label = stringResource(R.string.last_name_label),
                     icono = Icons.Default.Person,
-                    contentDescriptionIcono = "Icono de Apellidos",
+                    contentDescriptionIcono = stringResource(R.string.last_name_label),
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Text,
                         capitalization = KeyboardCapitalization.Sentences,
@@ -114,14 +121,12 @@ fun PersonalDataScreen() {
                         imeAction = ImeAction.Done
                     ),
                     isError = apellidosError,
-                    errorMessage = if (apellidosError) "Este campo es obligatorio" else "",
-                    modifier = Modifier.weight(1f) // Ocupa la otra mitad del espacio disponible
+                    errorMessage = if (apellidosError) stringResource(R.string.required_field) else "",
+                    modifier = Modifier.weight(1f)
                 )
             }
 
             Spacer(modifier = Modifier.height(16.dp))
-
-            /* Campo Sexo */
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -130,16 +135,16 @@ fun PersonalDataScreen() {
             ) {
                 Icon(
                     imageVector = Icons.Default.Face,
-                    contentDescription = "Icono de Sexo",
+                    contentDescription = stringResource(R.string.sex_label),
                     modifier = Modifier.padding(end = 8.dp)
                 )
-                Text(text = "Sexo:", style = MaterialTheme.typography.bodyMedium)
+                Text(text = stringResource(R.string.sex_label), style = MaterialTheme.typography.bodyMedium)
 
                 RadioButton(
                     selected = sexoSeleccionado == "Hombre",
                     onClick = { sexoSeleccionado = "Hombre" }
                 )
-                Text("Hombre")
+                Text(stringResource(R.string.male_label))
 
                 Spacer(modifier = Modifier.width(20.dp))
 
@@ -147,25 +152,22 @@ fun PersonalDataScreen() {
                     selected = sexoSeleccionado == "Mujer",
                     onClick = { sexoSeleccionado = "Mujer" }
                 )
-                Text("Mujer")
+                Text(stringResource(R.string.female_label))
 
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            /* Campo Fecha Nacimiento */
-
             Row(
-                modifier = Modifier.fillMaxWidth(), // La fila exterior ocupa todo el ancho para permitir el centrado
-                horizontalArrangement = Arrangement.Center // Centra horizontalmente su contenido
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
             ) {
-                Row( // La fila interior contiene el icono y el TextField
+                Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    // No usamos Modifier.fillMaxWidth() aquí para que se ajuste al contenido
                 ) {
                     Icon(
                         imageVector = Icons.Default.DateRange,
-                        contentDescription = "Icono de Fecha",
+                        contentDescription = stringResource(R.string.birth_date_label),
                         modifier = Modifier.padding(end = 8.dp)
                     )
 
@@ -173,41 +175,40 @@ fun PersonalDataScreen() {
                         value = fechaNacimiento,
                         onValueChange = { /* No permitir edición directa */ },
                         readOnly = true,
-                        label = { Text("Fecha de nacimiento") },
+                        label = { Text(stringResource(R.string.birth_date_label)) },
                         trailingIcon = { Button(onClick = { showDatePicker(context) { year, month, dayOfMonth ->
                             fechaNacimiento = "$dayOfMonth/${month + 1}/$year"
                         } }) {
-                            Text("Cambiar")
+                            Text(stringResource(R.string.change_date_button))
                         } },
                         // Remove Modifier.weight(1f) para que el TextField no ocupe todo el ancho de la fila interior
                         isError = fechaNacimientoError,
                         supportingText = { if (fechaNacimientoError) {
-                            Text("Este campo es obligatorio", color = MaterialTheme.colorScheme.error)
+                            Text(stringResource(R.string.required_field), color = MaterialTheme.colorScheme.error)
                         } }
                     )
+
                 }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            /* Fila para el campo Grado y el botón Siguiente */
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween // Coloca elementos a los extremos
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                /* Campo Grado */
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.weight(1f) // Ocupa el espacio disponible a la izquierda
+                    modifier = Modifier.weight(1f)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Create,
-                        contentDescription = "Icono de Escolaridad",
+                        contentDescription = stringResource(R.string.school_grade_label),
                         modifier = Modifier.padding(end = 8.dp)
                     )
                     var expanded by remember { mutableStateOf(false) }
-                    val opcionesGrado = listOf("Primaria", "Secundaria", "Universitario", "Otro")
+                    val opcionesGrado = listOf("Primaria", "Secundaria", "Universitario", "Otro") // Estos también deberían ser recursos si necesitas traducirlos
 
                     ExposedDropdownMenuBox(
                         expanded = expanded,
@@ -217,7 +218,7 @@ fun PersonalDataScreen() {
                             value = gradoEscolaridadSeleccionado,
                             onValueChange = { /* No permitir edición directa */ },
                             readOnly = true,
-                            label = { Text("Grado de escolaridad") },
+                            label = { Text(stringResource(R.string.school_grade_label)) },
                             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                             modifier = Modifier.fillMaxWidth().menuAnchor()
                         )
@@ -225,7 +226,7 @@ fun PersonalDataScreen() {
                             expanded = expanded,
                             onDismissRequest = { expanded = false }
                         ) {
-                            opcionesGrado.forEach { seleccion ->
+                            opcionesGrado.forEach { seleccion -> // Si necesitas traducir las opciones, considera otra estrategia (List<StringResource>)
                                 DropdownMenuItem(
                                     text = { Text(text = seleccion) },
                                     onClick = {
@@ -238,69 +239,55 @@ fun PersonalDataScreen() {
                     }
                 }
 
-                /* Boton Siguiente */
                 Button(onClick = {
                     intentoValidacion = true
                     if (nombres.isNotBlank() && apellidos.isNotBlank() && fechaNacimiento.isNotBlank()) {
-                        android.util.Log.d("PersonalData", "Información personal:")
-                        android.util.Log.d("PersonalData", "${nombres} ${apellidos}")
-                        sexoSeleccionado?.let { android.util.Log.d("PersonalData", it) }
-                        android.util.Log.d("PersonalData", "Nació el $fechaNacimiento")
-                        if (gradoEscolaridadSeleccionado.isNotBlank()) {
-                            android.util.Log.d("PersonalData", gradoEscolaridadSeleccionado)
-                        }
-                        // Aquí iría la lógica para navegar a la siguiente actividad soi
+                        // ... lógica de validación
+                        navController.navigate("contact_data")
                     } else {
-                        android.util.Log.e("PersonalData", "Por favor, completa los campos obligatorios (*).")
-                        // Opcionalmente, podrías mostrar un mensaje al usuario en la UI
+                        // ... mostrar error usando stringResource(R.string.required_field)
                     }
                 }) {
-                    Text("Siguiente")
+                    Text(stringResource(R.string.next_button))
                 }
             }
 
         } else {
-            /* Campo Nombres */
-
             CampoConIcono(
                 value = nombres,
                 onValueChange = { nombres = it },
-                label = "Nombres",
+                label = stringResource(R.string.name_label),
                 icono = Icons.Default.Person,
-                contentDescriptionIcono = "Icono de Nombres",
+                contentDescriptionIcono = stringResource(R.string.name_label),
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text,
                     capitalization = KeyboardCapitalization.Sentences,
                     autoCorrect = false,
                     imeAction = ImeAction.Done
                 ),
-                isError = nombresError, // Nuevo parámetro para indicar error
-                errorMessage = if (nombresError) "Este campo es obligatorio" else "" // Mensaje de error opcional
+                isError = nombresError,
+                errorMessage = if (nombresError) stringResource(R.string.required_field) else ""
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            /* Campo Apellidos */
-
             CampoConIcono(
                 value = apellidos,
                 onValueChange = { apellidos = it },
-                label = "Apellidos",
+                label = stringResource(R.string.last_name_label),
                 icono = Icons.Default.Person,
-                contentDescriptionIcono = "Icono de Apellidos",
+                contentDescriptionIcono = stringResource(R.string.last_name_label),
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text,
                     capitalization = KeyboardCapitalization.Sentences,
                     autoCorrect = false,
                     imeAction = ImeAction.Done
                 ),
-                isError = apellidosError, // Nuevo parámetro para indicar error
-                errorMessage = if (apellidosError) "Este campo es obligatorio" else "" // Mensaje de error opcional
+                isError = apellidosError,
+                errorMessage = if (apellidosError) stringResource(R.string.required_field) else ""
             )
 
             Spacer(modifier = Modifier.height(16.dp))
-
-            /* Campo Sexo */
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -308,16 +295,16 @@ fun PersonalDataScreen() {
             ) {
                 Icon(
                     imageVector = Icons.Default.Face,
-                    contentDescription = "Icono de Sexo",
+                    contentDescription = stringResource(R.string.sex_label),
                     modifier = Modifier.padding(end = 8.dp)
                 )
-                Text(text = "Sexo:", style = MaterialTheme.typography.bodyMedium)
+                Text(text = stringResource(R.string.sex_label), style = MaterialTheme.typography.bodyMedium)
 
                 RadioButton(
                     selected = sexoSeleccionado == "Hombre",
                     onClick = { sexoSeleccionado = "Hombre" }
                 )
-                Text("Hombre")
+                Text(stringResource(R.string.male_label))
 
                 Spacer(modifier = Modifier.width(20.dp))
 
@@ -325,13 +312,11 @@ fun PersonalDataScreen() {
                     selected = sexoSeleccionado == "Mujer",
                     onClick = { sexoSeleccionado = "Mujer" }
                 )
-                Text("Mujer")
+                Text(stringResource(R.string.female_label))
 
             }
 
             Spacer(modifier = Modifier.height(16.dp))
-
-            /* Campo Fecha Nacimiento */
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -339,7 +324,7 @@ fun PersonalDataScreen() {
             ) {
                 Icon(
                     imageVector = Icons.Default.DateRange,
-                    contentDescription = "Icono de Fecha",
+                    contentDescription = stringResource(R.string.birth_date_label),
                     modifier = Modifier.padding(end = 8.dp)
                 )
 
@@ -347,16 +332,16 @@ fun PersonalDataScreen() {
                     value = fechaNacimiento,
                     onValueChange = { /* No permitir edición directa */ },
                     readOnly = true,
-                    label = { Text("Fecha de nacimiento") },
+                    label = { Text(stringResource(R.string.birth_date_label)) },
                     trailingIcon = { Button(onClick = { showDatePicker(context) { year, month, dayOfMonth ->
                         fechaNacimiento = "$dayOfMonth/${month + 1}/$year"
                     } }) {
-                        Text("Cambiar")
+                        Text(stringResource(R.string.change_date_button))
                     } },
-                    modifier = Modifier.weight(1f),
-                    isError = fechaNacimientoError, // Nuevo parámetro para indicar error
+                    // Remove Modifier.weight(1f) para que el TextField no ocupe todo el ancho de la fila interior
+                    isError = fechaNacimientoError,
                     supportingText = { if (fechaNacimientoError) {
-                        Text("Este campo es obligatorio", color = MaterialTheme.colorScheme.error)
+                        Text(stringResource(R.string.required_field), color = MaterialTheme.colorScheme.error)
                     } }
                 )
 
@@ -364,10 +349,8 @@ fun PersonalDataScreen() {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            /* Campo Grado */
-
             var expanded by remember { mutableStateOf(false) }
-            val opcionesGrado = listOf("Primaria", "Secundaria", "Universitario", "Otro")
+            val opcionesGrado = listOf("Primaria", "Secundaria", "Universitario", "Otro") // Estos también deberían ser recursos si necesitas traducirlos
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -376,7 +359,7 @@ fun PersonalDataScreen() {
                 ) {
                 Icon(
                     imageVector = Icons.Default.Create,
-                    contentDescription = "Icono de Escolaridad",
+                    contentDescription = stringResource(R.string.school_grade_label),
                     modifier = Modifier.padding(end = 8.dp)
                 )
                 ExposedDropdownMenuBox(
@@ -387,7 +370,7 @@ fun PersonalDataScreen() {
                         value = gradoEscolaridadSeleccionado,
                         onValueChange = { /* No permitir edición directa */ },
                         readOnly = true,
-                        label = { Text("Grado de escolaridad") },
+                        label = { Text(stringResource(R.string.school_grade_label)) },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                         modifier = Modifier.fillMaxWidth().menuAnchor()
                     )
@@ -395,7 +378,7 @@ fun PersonalDataScreen() {
                         expanded = expanded,
                         onDismissRequest = { expanded = false }
                     ) {
-                        opcionesGrado.forEach { seleccion ->
+                        opcionesGrado.forEach { seleccion -> // Si necesitas traducir las opciones, considera otra estrategia (List<StringResource>)
                             DropdownMenuItem(
                                 text = { Text(text = seleccion) },
                                 onClick = {
@@ -411,47 +394,19 @@ fun PersonalDataScreen() {
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            /* Boton Siguiente */
-
             Button(onClick = {
-                intentoValidacion = true // Marcamos que se intentó la validación
+                intentoValidacion = true
                 if (nombres.isNotBlank() && apellidos.isNotBlank() && fechaNacimiento.isNotBlank()) {
-                    android.util.Log.d("PersonalData", "Información personal:")
-                    android.util.Log.d("PersonalData", "${nombres} ${apellidos}")
-                    sexoSeleccionado?.let { android.util.Log.d("PersonalData", it) }
-                    android.util.Log.d("PersonalData", "Nació el $fechaNacimiento")
-                    if (gradoEscolaridadSeleccionado.isNotBlank()) {
-                        android.util.Log.d("PersonalData", gradoEscolaridadSeleccionado)
-                    }
-                    // Aquí iría la lógica para navegar a la siguiente actividad soi
+                    navController.navigate("contact_data")
                 } else {
-                    android.util.Log.e("PersonalData", "Por favor, completa los campos obligatorios (*).")
-                    // Opcionalmente, podrías mostrar un mensaje al usuario en la UI
+                    // ... mostrar error usando stringResource(R.string.required_field)
                 }
             }) {
-                Text("Siguiente")
+                Text(stringResource(R.string.next_button))
             }
         }
 
     }
-}
-
-fun showDatePicker(context: Context, onDateSelected: (year: Int, month: Int, dayOfMonth: Int) -> Unit) {
-    val calendar = Calendar.getInstance()
-    val year = calendar.get(Calendar.YEAR)
-    val month = calendar.get(Calendar.MONTH)
-    val day = calendar.get(Calendar.DAY_OF_MONTH)
-
-    val datePickerDialog = DatePickerDialog(
-        context,
-        { _: DatePicker, year: Int, month: Int, dayOfMonth: Int ->
-            onDateSelected(year, month, dayOfMonth)
-        },
-        year,
-        month,
-        day
-    )
-    datePickerDialog.show()
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -465,10 +420,10 @@ fun CampoConIcono(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     isError: Boolean = false,
     errorMessage: String = "",
-    modifier: Modifier = Modifier // Añade un parámetro modifier con un valor por defecto
+    modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = modifier.fillMaxWidth() , // Usamos el modifier pasado desde el padre y luego fillMaxWidth
+        modifier = modifier.fillMaxWidth() ,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
@@ -494,4 +449,22 @@ fun CampoConIcono(
             }
         )
     }
+}
+
+fun showDatePicker(context: Context, onDateSelected: (year: Int, month: Int, dayOfMonth: Int) -> Unit) {
+    val calendar = Calendar.getInstance()
+    val year = calendar.get(Calendar.YEAR)
+    val month = calendar.get(Calendar.MONTH)
+    val day = calendar.get(Calendar.DAY_OF_MONTH)
+
+    val datePickerDialog = DatePickerDialog(
+        context,
+        { _: DatePicker, year: Int, month: Int, dayOfMonth: Int ->
+            onDateSelected(year, month, dayOfMonth)
+        },
+        year,
+        month,
+        day
+    )
+    datePickerDialog.show()
 }

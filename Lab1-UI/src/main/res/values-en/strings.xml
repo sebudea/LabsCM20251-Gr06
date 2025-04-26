@@ -1,0 +1,17 @@
+<resources>
+    <string name="personal_info_title">Personal Information</string>
+    <string name="name_label">Names</string>
+    <string name="last_name_label">Last Names</string>
+    <string name="birth_date_label">Date of birth</string>
+    <string name="sex_label">Sex:</string>
+    <string name="male_label">Male</string>
+    <string name="female_label">Female</string>
+    <string name="school_grade_label">School grade</string>
+    <string name="next_button">Next</string>
+    <string name="required_field">This field is required</string>
+    <string name="change_date_button">Change</string>
+    <string name="select_date_title">Select date of birth</string>
+    <string name="select_date_headline">Select a date</string>
+    <string name="cancel_button">Cancel</string>
+    <string name="accept_button">Accept</string>
+</resources>

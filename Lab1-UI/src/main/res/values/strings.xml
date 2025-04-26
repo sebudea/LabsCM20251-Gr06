@@ -1,3 +1,18 @@
 <resources>
     <string name="app_name">Labs20251-Gr06</string>
+    <string name="personal_info_title">Información Personal</string>
+    <string name="name_label">Nombres</string>
+    <string name="last_name_label">Apellidos</string>
+    <string name="birth_date_label">Fecha de nacimiento</string>
+    <string name="sex_label">Sexo:</string>
+    <string name="male_label">Hombre</string>
+    <string name="female_label">Mujer</string>
+    <string name="school_grade_label">Grado de escolaridad</string>
+    <string name="next_button">Siguiente</string>
+    <string name="required_field">Este campo es obligatorio</string>
+    <string name="change_date_button">Cambiar</string>
+    <string name="select_date_title">Seleccionar fecha de nacimiento</string>
+    <string name="select_date_headline">Seleccione una fecha</string>
+    <string name="cancel_button">Cancelar</string>
+    <string name="accept_button">Aceptar</string>
 </resources>
