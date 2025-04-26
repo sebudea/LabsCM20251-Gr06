@@ -2,6 +2,7 @@ package co.edu.udea.compumovil.gr06_20251.lab1
 
 import android.app.DatePickerDialog
 import android.content.Context
+import android.content.res.Configuration
 import android.widget.DatePicker
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -21,6 +22,7 @@ import co.edu.udea.compumovil.gr06_20251.lab1.PersonalDataScreen
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Info
@@ -29,7 +31,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
@@ -64,6 +68,9 @@ fun PersonalDataScreen() {
     val apellidosError = intentoValidacion && apellidos.isBlank()
     val fechaNacimientoError = intentoValidacion && fechaNacimiento.isBlank()
 
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -72,159 +79,360 @@ fun PersonalDataScreen() {
     ) {
         Text("Información Personal", style = MaterialTheme.typography.headlineMedium, modifier = Modifier.padding(bottom = 16.dp))
 
-        /* Campo Nombres */
-
-        CampoConIcono(
-            value = nombres,
-            onValueChange = { nombres = it },
-            label = "*Nombres",
-            icono = Icons.Default.Person,
-            contentDescriptionIcono = "Icono de Nombres",
-            keyboardOptions = KeyboardOptions(
-                capitalization = KeyboardCapitalization.Sentences,
-                autoCorrect = false
-            )
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        /* Campo Apellidos */
-
-        CampoConIcono(
-            value = apellidos,
-            onValueChange = { apellidos = it },
-            label = "*Apellidos",
-            icono = Icons.Default.Person,
-            contentDescriptionIcono = "Icono de Apellidos",
-            keyboardOptions = KeyboardOptions(
-                capitalization = KeyboardCapitalization.Sentences,
-                autoCorrect = false
-            )
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        /* Campo Sexo */
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = Icons.Default.Face,
-                contentDescription = "Icono de Apellidos",
-                modifier = Modifier.padding(end = 8.dp)
-            )
-            Text(text = "Sexo:", style = MaterialTheme.typography.bodyMedium)
-
-            RadioButton(
-                selected = sexoSeleccionado == "Hombre",
-                onClick = { sexoSeleccionado = "Hombre" }
-            )
-            Text("Hombre")
-
-            Spacer(modifier = Modifier.width(20.dp))
-
-            RadioButton(
-                selected = sexoSeleccionado == "Mujer",
-                onClick = { sexoSeleccionado = "Mujer" }
-            )
-            Text("Mujer")
-
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        /* Campo Fecha Nacimiento */
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Icon(
-                imageVector = Icons.Default.DateRange, // Icono de persona predeterminado
-                contentDescription = "Icono de Fecha",
-                modifier = Modifier.padding(end = 8.dp) // Añade un espacio entre el icono y el texto
-            )
-            Text(text = "Fecha de Nacimiento:", style = MaterialTheme.typography.bodyMedium)
-
-            Spacer(modifier = Modifier.width(20.dp))
-
-            Button(onClick = { showDatePicker(context) { year, month, dayOfMonth ->
-                fechaNacimiento = "$dayOfMonth/${month + 1}/$year"
-            } }) {
-                Text("Cambiar")
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        /* Campo Grado */
-
-        var expanded by remember { mutableStateOf(false) }
-        val opcionesGrado = listOf("Primaria", "Secundaria", "Universitario", "Otro")
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-
+        if (isLandscape) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.Top
             ) {
-            Icon(
-                imageVector = Icons.Default.Info, // Icono de persona predeterminado
-                contentDescription = "Icono de Escolaridad",
-                modifier = Modifier.padding(end = 8.dp) // Añade un espacio entre el icono y el texto
-            )
-            ExposedDropdownMenuBox(
-                expanded = expanded,
-                onExpandedChange = { expanded = !expanded }
-            ) {
-                TextField(
-                    value = gradoEscolaridadSeleccionado,
-                    onValueChange = { /* No permitir edición directa */ },
-                    readOnly = true,
-                    label = { Text("Grado de escolaridad") },
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                    modifier = Modifier.fillMaxWidth().menuAnchor()
+                CampoConIcono(
+                    value = nombres,
+                    onValueChange = { nombres = it },
+                    label = "Nombres",
+                    icono = Icons.Default.Person,
+                    contentDescriptionIcono = "Icono de Nombres",
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Text,
+                        capitalization = KeyboardCapitalization.Sentences,
+                        autoCorrect = false,
+                        imeAction = ImeAction.Done
+                    ),
+                    isError = nombresError,
+                    errorMessage = if (nombresError) "Este campo es obligatorio" else "",
+                    modifier = Modifier.weight(1f) // Ocupa la mitad del espacio disponible
                 )
-                ExposedDropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false }
+                CampoConIcono(
+                    value = apellidos,
+                    onValueChange = { apellidos = it },
+                    label = "Apellidos",
+                    icono = Icons.Default.Person,
+                    contentDescriptionIcono = "Icono de Apellidos",
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Text,
+                        capitalization = KeyboardCapitalization.Sentences,
+                        autoCorrect = false,
+                        imeAction = ImeAction.Done
+                    ),
+                    isError = apellidosError,
+                    errorMessage = if (apellidosError) "Este campo es obligatorio" else "",
+                    modifier = Modifier.weight(1f) // Ocupa la otra mitad del espacio disponible
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            /* Campo Sexo */
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Face,
+                    contentDescription = "Icono de Sexo",
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+                Text(text = "Sexo:", style = MaterialTheme.typography.bodyMedium)
+
+                RadioButton(
+                    selected = sexoSeleccionado == "Hombre",
+                    onClick = { sexoSeleccionado = "Hombre" }
+                )
+                Text("Hombre")
+
+                Spacer(modifier = Modifier.width(20.dp))
+
+                RadioButton(
+                    selected = sexoSeleccionado == "Mujer",
+                    onClick = { sexoSeleccionado = "Mujer" }
+                )
+                Text("Mujer")
+
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            /* Campo Fecha Nacimiento */
+
+            Row(
+                modifier = Modifier.fillMaxWidth(), // La fila exterior ocupa todo el ancho para permitir el centrado
+                horizontalArrangement = Arrangement.Center // Centra horizontalmente su contenido
+            ) {
+                Row( // La fila interior contiene el icono y el TextField
+                    verticalAlignment = Alignment.CenterVertically,
+                    // No usamos Modifier.fillMaxWidth() aquí para que se ajuste al contenido
                 ) {
-                    opcionesGrado.forEach { seleccion ->
-                        DropdownMenuItem(
-                            text = { Text(text = seleccion) },
-                            onClick = {
-                                gradoEscolaridadSeleccionado = seleccion
-                                expanded = false
-                            }
+                    Icon(
+                        imageVector = Icons.Default.DateRange,
+                        contentDescription = "Icono de Fecha",
+                        modifier = Modifier.padding(end = 8.dp)
+                    )
+
+                    TextField(
+                        value = fechaNacimiento,
+                        onValueChange = { /* No permitir edición directa */ },
+                        readOnly = true,
+                        label = { Text("Fecha de nacimiento") },
+                        trailingIcon = { Button(onClick = { showDatePicker(context) { year, month, dayOfMonth ->
+                            fechaNacimiento = "$dayOfMonth/${month + 1}/$year"
+                        } }) {
+                            Text("Cambiar")
+                        } },
+                        // Remove Modifier.weight(1f) para que el TextField no ocupe todo el ancho de la fila interior
+                        isError = fechaNacimientoError,
+                        supportingText = { if (fechaNacimientoError) {
+                            Text("Este campo es obligatorio", color = MaterialTheme.colorScheme.error)
+                        } }
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            /* Fila para el campo Grado y el botón Siguiente */
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween // Coloca elementos a los extremos
+            ) {
+                /* Campo Grado */
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.weight(1f) // Ocupa el espacio disponible a la izquierda
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Create,
+                        contentDescription = "Icono de Escolaridad",
+                        modifier = Modifier.padding(end = 8.dp)
+                    )
+                    var expanded by remember { mutableStateOf(false) }
+                    val opcionesGrado = listOf("Primaria", "Secundaria", "Universitario", "Otro")
+
+                    ExposedDropdownMenuBox(
+                        expanded = expanded,
+                        onExpandedChange = { expanded = !expanded }
+                    ) {
+                        TextField(
+                            value = gradoEscolaridadSeleccionado,
+                            onValueChange = { /* No permitir edición directa */ },
+                            readOnly = true,
+                            label = { Text("Grado de escolaridad") },
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                            modifier = Modifier.fillMaxWidth().menuAnchor()
                         )
+                        ExposedDropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false }
+                        ) {
+                            opcionesGrado.forEach { seleccion ->
+                                DropdownMenuItem(
+                                    text = { Text(text = seleccion) },
+                                    onClick = {
+                                        gradoEscolaridadSeleccionado = seleccion
+                                        expanded = false
+                                    }
+                                )
+                            }
+                        }
                     }
                 }
-            }
 
-        }
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        /* Boton Siguiente */
-
-        Button(onClick = {
-            if (nombres.isNotBlank() && apellidos.isNotBlank() && fechaNacimiento.isNotBlank()) {
-                android.util.Log.d("PersonalData", "Información personal:")
-                android.util.Log.d("PersonalData", "${nombres} ${apellidos}")
-                sexoSeleccionado?.let { android.util.Log.d("PersonalData", it) }
-                android.util.Log.d("PersonalData", "Nació el $fechaNacimiento")
-                if (gradoEscolaridadSeleccionado.isNotBlank()) {
-                    android.util.Log.d("PersonalData", gradoEscolaridadSeleccionado)
+                /* Boton Siguiente */
+                Button(onClick = {
+                    intentoValidacion = true
+                    if (nombres.isNotBlank() && apellidos.isNotBlank() && fechaNacimiento.isNotBlank()) {
+                        android.util.Log.d("PersonalData", "Información personal:")
+                        android.util.Log.d("PersonalData", "${nombres} ${apellidos}")
+                        sexoSeleccionado?.let { android.util.Log.d("PersonalData", it) }
+                        android.util.Log.d("PersonalData", "Nació el $fechaNacimiento")
+                        if (gradoEscolaridadSeleccionado.isNotBlank()) {
+                            android.util.Log.d("PersonalData", gradoEscolaridadSeleccionado)
+                        }
+                        // Aquí iría la lógica para navegar a la siguiente actividad soi
+                    } else {
+                        android.util.Log.e("PersonalData", "Por favor, completa los campos obligatorios (*).")
+                        // Opcionalmente, podrías mostrar un mensaje al usuario en la UI
+                    }
+                }) {
+                    Text("Siguiente")
                 }
-                // Aquí iría la lógica para navegar a la siguiente actividad soi
-            } else {
-                android.util.Log.e("PersonalData", "Por favor, completa los campos obligatorios (*).")
-                // Opcionalmente, podrías mostrar un mensaje al usuario en la UI
             }
-        }) {
-            Text("Siguiente")
+
+        } else {
+            /* Campo Nombres */
+
+            CampoConIcono(
+                value = nombres,
+                onValueChange = { nombres = it },
+                label = "Nombres",
+                icono = Icons.Default.Person,
+                contentDescriptionIcono = "Icono de Nombres",
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text,
+                    capitalization = KeyboardCapitalization.Sentences,
+                    autoCorrect = false,
+                    imeAction = ImeAction.Done
+                ),
+                isError = nombresError, // Nuevo parámetro para indicar error
+                errorMessage = if (nombresError) "Este campo es obligatorio" else "" // Mensaje de error opcional
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            /* Campo Apellidos */
+
+            CampoConIcono(
+                value = apellidos,
+                onValueChange = { apellidos = it },
+                label = "Apellidos",
+                icono = Icons.Default.Person,
+                contentDescriptionIcono = "Icono de Apellidos",
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text,
+                    capitalization = KeyboardCapitalization.Sentences,
+                    autoCorrect = false,
+                    imeAction = ImeAction.Done
+                ),
+                isError = apellidosError, // Nuevo parámetro para indicar error
+                errorMessage = if (apellidosError) "Este campo es obligatorio" else "" // Mensaje de error opcional
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            /* Campo Sexo */
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Face,
+                    contentDescription = "Icono de Sexo",
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+                Text(text = "Sexo:", style = MaterialTheme.typography.bodyMedium)
+
+                RadioButton(
+                    selected = sexoSeleccionado == "Hombre",
+                    onClick = { sexoSeleccionado = "Hombre" }
+                )
+                Text("Hombre")
+
+                Spacer(modifier = Modifier.width(20.dp))
+
+                RadioButton(
+                    selected = sexoSeleccionado == "Mujer",
+                    onClick = { sexoSeleccionado = "Mujer" }
+                )
+                Text("Mujer")
+
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            /* Campo Fecha Nacimiento */
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(
+                    imageVector = Icons.Default.DateRange,
+                    contentDescription = "Icono de Fecha",
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+
+                TextField(
+                    value = fechaNacimiento,
+                    onValueChange = { /* No permitir edición directa */ },
+                    readOnly = true,
+                    label = { Text("Fecha de nacimiento") },
+                    trailingIcon = { Button(onClick = { showDatePicker(context) { year, month, dayOfMonth ->
+                        fechaNacimiento = "$dayOfMonth/${month + 1}/$year"
+                    } }) {
+                        Text("Cambiar")
+                    } },
+                    modifier = Modifier.weight(1f),
+                    isError = fechaNacimientoError, // Nuevo parámetro para indicar error
+                    supportingText = { if (fechaNacimientoError) {
+                        Text("Este campo es obligatorio", color = MaterialTheme.colorScheme.error)
+                    } }
+                )
+
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            /* Campo Grado */
+
+            var expanded by remember { mutableStateOf(false) }
+            val opcionesGrado = listOf("Primaria", "Secundaria", "Universitario", "Otro")
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+
+                ) {
+                Icon(
+                    imageVector = Icons.Default.Create,
+                    contentDescription = "Icono de Escolaridad",
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+                ExposedDropdownMenuBox(
+                    expanded = expanded,
+                    onExpandedChange = { expanded = !expanded }
+                ) {
+                    TextField(
+                        value = gradoEscolaridadSeleccionado,
+                        onValueChange = { /* No permitir edición directa */ },
+                        readOnly = true,
+                        label = { Text("Grado de escolaridad") },
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                        modifier = Modifier.fillMaxWidth().menuAnchor()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        opcionesGrado.forEach { seleccion ->
+                            DropdownMenuItem(
+                                text = { Text(text = seleccion) },
+                                onClick = {
+                                    gradoEscolaridadSeleccionado = seleccion
+                                    expanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+
+            }
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            /* Boton Siguiente */
+
+            Button(onClick = {
+                intentoValidacion = true // Marcamos que se intentó la validación
+                if (nombres.isNotBlank() && apellidos.isNotBlank() && fechaNacimiento.isNotBlank()) {
+                    android.util.Log.d("PersonalData", "Información personal:")
+                    android.util.Log.d("PersonalData", "${nombres} ${apellidos}")
+                    sexoSeleccionado?.let { android.util.Log.d("PersonalData", it) }
+                    android.util.Log.d("PersonalData", "Nació el $fechaNacimiento")
+                    if (gradoEscolaridadSeleccionado.isNotBlank()) {
+                        android.util.Log.d("PersonalData", gradoEscolaridadSeleccionado)
+                    }
+                    // Aquí iría la lógica para navegar a la siguiente actividad soi
+                } else {
+                    android.util.Log.e("PersonalData", "Por favor, completa los campos obligatorios (*).")
+                    // Opcionalmente, podrías mostrar un mensaje al usuario en la UI
+                }
+            }) {
+                Text("Siguiente")
+            }
         }
+
     }
 }
 
@@ -254,88 +462,36 @@ fun CampoConIcono(
     label: String,
     icono: ImageVector,
     contentDescriptionIcono: String,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    isError: Boolean = false,
+    errorMessage: String = "",
+    modifier: Modifier = Modifier // Añade un parámetro modifier con un valor por defecto
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth() ,
+        modifier = modifier.fillMaxWidth() , // Usamos el modifier pasado desde el padre y luego fillMaxWidth
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             imageVector = icono,
             contentDescription = contentDescriptionIcono,
-            modifier = Modifier.padding(end = 8.dp)
+            modifier = Modifier.padding(end = 8.dp),
+            tint = if (isError) MaterialTheme.colorScheme.error else LocalContentColor.current
         )
         TextField(
             value = value,
             onValueChange = onValueChange,
             label = { Text(label) },
             modifier = Modifier.weight(1f),
-            keyboardOptions = keyboardOptions
+            keyboardOptions = keyboardOptions,
+            isError = isError,
+            supportingText = {
+                if (isError && errorMessage.isNotBlank()) {
+                    Text(
+                        text = errorMessage,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            }
         )
-    }
-}
-
-
-
-/* PARA CONTACTO */
-@Composable
-fun PhoneNumber() {
-    var phoneNumber by rememberSaveable { mutableStateOf("") }
-    val numericRegex = Regex("[^0-9]")
-    TextField(
-        value = phoneNumber,
-        onValueChange = {
-            // Remove non-numeric characters.
-            val stripped = numericRegex.replace(it, "")
-            phoneNumber = if (stripped.length >= 10) {
-                stripped.substring(0..9)
-            } else {
-                stripped
-            }
-        },
-        label = { Text("Enter Phone Number") },
-        visualTransformation = NanpVisualTransformation(),
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-    )
-}
-
-class NanpVisualTransformation : VisualTransformation {
-
-    override fun filter(text: AnnotatedString): TransformedText {
-        val trimmed = if (text.text.length >= 10) text.text.substring(0..9) else text.text
-
-        var out = if (trimmed.isNotEmpty()) "(" else ""
-
-        for (i in trimmed.indices) {
-            if (i == 3) out += ") "
-            if (i == 6) out += "-"
-            out += trimmed[i]
-        }
-        return TransformedText(AnnotatedString(out), phoneNumberOffsetTranslator)
-    }
-
-    private val phoneNumberOffsetTranslator = object : OffsetMapping {
-
-        override fun originalToTransformed(offset: Int): Int =
-            when (offset) {
-                0 -> offset
-                // Add 1 for opening parenthesis.
-                in 1..3 -> offset + 1
-                // Add 3 for both parentheses and a space.
-                in 4..6 -> offset + 3
-                // Add 4 for both parentheses, space, and hyphen.
-                else -> offset + 4
-            }
-
-        override fun transformedToOriginal(offset: Int): Int =
-            when (offset) {
-                0 -> offset
-                // Subtract 1 for opening parenthesis.
-                in 1..5 -> offset - 1
-                // Subtract 3 for both parentheses and a space.
-                in 6..10 -> offset - 3
-                // Subtract 4 for both parentheses, space, and hyphen.
-                else -> offset - 4
-            }
     }
 }

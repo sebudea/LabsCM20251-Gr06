@@ -11,8 +11,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.OffsetMapping
+import androidx.compose.ui.text.input.TransformedText
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
@@ -111,4 +116,68 @@ fun ContactDataScreen() {
 @Composable
 fun ContactDataScreenPreview() {
     ContactDataScreen()
+}
+
+
+/* PARA CONTACTO */
+@Composable
+fun PhoneNumber() {
+    var phoneNumber by rememberSaveable { mutableStateOf("") }
+    val numericRegex = Regex("[^0-9]")
+    TextField(
+        value = phoneNumber,
+        onValueChange = {
+            // Remove non-numeric characters.
+            val stripped = numericRegex.replace(it, "")
+            phoneNumber = if (stripped.length >= 10) {
+                stripped.substring(0..9)
+            } else {
+                stripped
+            }
+        },
+        label = { Text("Enter Phone Number") },
+        visualTransformation = NanpVisualTransformation(),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+    )
+}
+
+class NanpVisualTransformation : VisualTransformation {
+
+    override fun filter(text: AnnotatedString): TransformedText {
+        val trimmed = if (text.text.length >= 10) text.text.substring(0..9) else text.text
+
+        var out = if (trimmed.isNotEmpty()) "(" else ""
+
+        for (i in trimmed.indices) {
+            if (i == 3) out += ") "
+            if (i == 6) out += "-"
+            out += trimmed[i]
+        }
+        return TransformedText(AnnotatedString(out), phoneNumberOffsetTranslator)
+    }
+
+    private val phoneNumberOffsetTranslator = object : OffsetMapping {
+
+        override fun originalToTransformed(offset: Int): Int =
+            when (offset) {
+                0 -> offset
+                // Add 1 for opening parenthesis.
+                in 1..3 -> offset + 1
+                // Add 3 for both parentheses and a space.
+                in 4..6 -> offset + 3
+                // Add 4 for both parentheses, space, and hyphen.
+                else -> offset + 4
+            }
+
+        override fun transformedToOriginal(offset: Int): Int =
+            when (offset) {
+                0 -> offset
+                // Subtract 1 for opening parenthesis.
+                in 1..5 -> offset - 1
+                // Subtract 3 for both parentheses and a space.
+                in 6..10 -> offset - 3
+                // Subtract 4 for both parentheses, space, and hyphen.
+                else -> offset - 4
+            }
+    }
 }
