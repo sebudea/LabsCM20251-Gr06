@@ -151,8 +151,9 @@ app/
 
 ## 👥 Autores
 
-- [Tu Nombre] - [Tu Usuario de GitHub]
-- [Otros Colaboradores]
+- [[Sebastian Aristizabal ](https://github.com/sebudea)]
+- [[Alejandro Arias ](https://github.com/AlejoAriasO)]
+- [[Alejandro Cifuentes](https://github.com/cifu0426)]
 
 ## 📄 Licencia
 
