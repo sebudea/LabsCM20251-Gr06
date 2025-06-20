@@ -1,3 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Labs20251-Gr06</string>
+    <string name="app_name">Lab2</string>
+    
+    <!-- Email List Screen -->
+    <string name="search">Search</string>
+    <string name="search_emails">Search emails</string>
+    <string name="all">All</string>
+    <string name="starred">Starred</string>
+    <string name="unread">Unread</string>
+    <string name="star">Star</string>
+    <string name="unstar">Unstar</string>
+    <string name="back">Back</string>
+    
+    <!-- Email Detail Screen -->
+    <string name="reply">Reply</string>
+    <string name="forward">Forward</string>
+    <string name="delete">Delete</string>
+    <string name="mark_as_read">Mark as read</string>
+    <string name="mark_as_unread">Mark as unread</string>
+    
+    <!-- Error Messages -->
+    <string name="error_loading_emails">Error loading emails</string>
+    <string name="retry">Retry</string>
+    
+    <!-- Empty States -->
+    <string name="no_emails">No emails found</string>
+    <string name="no_starred_emails">No starred emails</string>
+    <string name="no_unread_emails">No unread emails</string>
 </resources>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Lab2</string>
+    
+    <!-- Email List Screen -->
+    <string name="search">Buscar</string>
+    <string name="search_emails">Buscar correos</string>
+    <string name="all">Todos</string>
+    <string name="starred">Favoritos</string>
+    <string name="unread">No leídos</string>
+    <string name="star">Marcar como favorito</string>
+    <string name="unstar">Quitar de favoritos</string>
+    <string name="back">Volver</string>
+    
+    <!-- Email Detail Screen -->
+    <string name="reply">Responder</string>
+    <string name="forward">Reenviar</string>
+    <string name="delete">Eliminar</string>
+    <string name="mark_as_read">Marcar como leído</string>
+    <string name="mark_as_unread">Marcar como no leído</string>
+    
+    <!-- Error Messages -->
+    <string name="error_loading_emails">Error al cargar los correos</string>
+    <string name="retry">Reintentar</string>
+    
+    <!-- Empty States -->
+    <string name="no_emails">No se encontraron correos</string>
+    <string name="no_starred_emails">No hay correos favoritos</string>
+    <string name="no_unread_emails">No hay correos sin leer</string>
+</resources> 

@@ -1,13 +1,23 @@
 [versions]
 agp = "8.9.1"
-kotlin = "2.0.21"
-coreKtx = "1.16.0"
+kotlin = "1.9.22"
+compose = "1.5.11"
+coreKtx = "1.12.0"
 junit = "4.13.2"
-junitVersion = "1.2.1"
-espressoCore = "3.6.1"
-lifecycleRuntimeKtx = "2.8.7"
-activityCompose = "1.10.1"
-composeBom = "2024.09.00"
+junitVersion = "1.1.5"
+espressoCore = "3.5.1"
+lifecycleRuntimeKtx = "2.7.0"
+activityCompose = "1.8.2"
+composeBom = "2024.02.00"
+room = "2.6.1"
+retrofit = "2.9.0"
+okhttp = "4.12.0"
+coil = "2.5.0"
+workManager = "2.9.0"
+navigationCompose = "2.7.7"
+hilt = "2.50"
+moshi = "1.15.0"
+roomCommonJvm = "2.7.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -25,8 +35,30 @@ androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-man
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 
+# Room
+androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+
+# Retrofit
+retrofit-core = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
+retrofit-converter-moshi = { group = "com.squareup.retrofit2", name = "converter-moshi", version.ref = "retrofit" }
+okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
+moshi-kotlin = { group = "com.squareup.moshi", name = "moshi-kotlin", version.ref = "moshi" }
+
+# WorkManager
+androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "workManager" }
+
+# Navigation
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
+
+# Image Loading
+coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
+androidx-room-common-jvm = { group = "androidx.room", name = "room-common-jvm", version.ref = "roomCommonJvm" }
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
+kotlin-compose = { id = "org.jetbrains.compose", version.ref = "compose" }
 
