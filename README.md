@@ -66,9 +66,55 @@ Esta aplicación es una implementación moderna de un cliente de correo electró
    - Selecciona un dispositivo o emulador
    - Click en Run 'Lab1-UI' (⇧F10)
 
+## 🌐 API REST (MockAPI)
+
+La aplicación utiliza MockAPI para simular un servidor de correos electrónicos. Los endpoints disponibles son:
+
+- **Base URL**: `https://685503706a6ef0ed6630e738.mockapi.io/emails-api`
+- **Endpoints**:
+  - GET `/emails` - Obtener lista de correos
+  - GET `/emails/:id` - Obtener un correo específico
+  - PUT `/emails/:id` - Actualizar un correo (marcar como leído/favorito)
+
+Estructura de los datos:
+
+```json
+{
+  "id": "string",
+  "senderName": "string",
+  "senderEmail": "string",
+  "subject": "string",
+  "body": "string",
+  "createdAt": "string",
+  "isRead": boolean,
+  "isStarred": boolean
+}
+```
+
 ## 📱 Capturas de Pantalla
 
-[Aquí irían las capturas de pantalla de tu aplicación]
+### Vista Principal
+
+![Vista Principal](screenshots/main.png)
+_Lista principal de correos electrónicos con navegación y búsqueda_
+
+### Detalle de Correo
+
+![Detalle de Correo](screenshots/email.png)
+_Vista detallada de un correo electrónico_
+
+### Correos Favoritos
+
+![Correos Favoritos](screenshots/fav.png)
+_Vista filtrada de correos marcados como favoritos_
+
+Las capturas de pantalla muestran las principales funcionalidades de la aplicación:
+
+- Interfaz moderna con Material Design 3
+- Navegación intuitiva
+- Sistema de favoritos
+- Vista detallada de correos
+- Diseño responsive
 
 ## 🏗️ Arquitectura
 
