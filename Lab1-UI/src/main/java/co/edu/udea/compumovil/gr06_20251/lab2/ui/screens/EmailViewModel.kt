@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -18,7 +17,7 @@ class EmailViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: EmailRepository
     private val _searchQuery = MutableStateFlow("")
     private val _currentTab = MutableStateFlow(EmailTab.ALL)
-    private val _selectedEmailId = MutableStateFlow<Long?>(null)
+    private val _selectedEmailId = MutableStateFlow<String?>(null)
 
     init {
         val database = EmailDatabase.getDatabase(application)
@@ -29,47 +28,49 @@ class EmailViewModel(application: Application) : AndroidViewModel(application) {
 
     val searchQuery: StateFlow<String> = _searchQuery
     val currentTab: StateFlow<EmailTab> = _currentTab
-    val selectedEmailId: StateFlow<Long?> = _selectedEmailId
+    val selectedEmailId: StateFlow<String?> = _selectedEmailId
 
-    val emailsUiState = combine(
-        repository.allEmails,
-        repository.starredEmails,
-        repository.unreadEmails,
-        _searchQuery,
-        _currentTab
-    ) { allEmails, starredEmails, unreadEmails, query, tab ->
-        val emails = when (tab) {
-            EmailTab.ALL -> allEmails
-            EmailTab.STARRED -> starredEmails
-            EmailTab.UNREAD -> unreadEmails
-        }
+    val emailsUiState =
+            combine(
+                            repository.allEmails,
+                            repository.starredEmails,
+                            repository.unreadEmails,
+                            _searchQuery,
+                            _currentTab
+                    ) { allEmails, starredEmails, unreadEmails, query, tab ->
+                        val emails =
+                                when (tab) {
+                                    EmailTab.ALL -> allEmails
+                                    EmailTab.STARRED -> starredEmails
+                                    EmailTab.UNREAD -> unreadEmails
+                                }
 
-        if (query.isBlank()) {
-            EmailsUiState.Success(emails)
-        } else {
-            EmailsUiState.Success(emails.filter {
-                it.subject.contains(query, ignoreCase = true) ||
-                it.body.contains(query, ignoreCase = true)
-            })
-        }
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = EmailsUiState.Loading
-    )
+                        if (query.isBlank()) {
+                            EmailsUiState.Success(emails)
+                        } else {
+                            EmailsUiState.Success(
+                                    emails.filter {
+                                        it.subject.contains(query, ignoreCase = true) ||
+                                                it.body.contains(query, ignoreCase = true)
+                                    }
+                            )
+                        }
+                    }
+                    .stateIn(
+                            scope = viewModelScope,
+                            started = SharingStarted.WhileSubscribed(5000),
+                            initialValue = EmailsUiState.Loading
+                    )
 
-    val selectedEmail = combine(
-        repository.allEmails,
-        _selectedEmailId
-    ) { emails, selectedId ->
-        selectedId?.let { id ->
-            emails.find { it.id == id }
-        }
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = null
-    )
+    val selectedEmail =
+            combine(repository.allEmails, _selectedEmailId) { emails, selectedId ->
+                        selectedId?.let { id -> emails.find { it.id == id } }
+                    }
+                    .stateIn(
+                            scope = viewModelScope,
+                            started = SharingStarted.WhileSubscribed(5000),
+                            initialValue = null
+                    )
 
     fun updateSearchQuery(query: String) {
         _searchQuery.value = query
@@ -79,35 +80,38 @@ class EmailViewModel(application: Application) : AndroidViewModel(application) {
         _currentTab.value = tab
     }
 
-    fun selectEmail(emailId: Long) {
+    fun selectEmail(emailId: String) {
         _selectedEmailId.value = emailId
-        viewModelScope.launch {
-            repository.markEmailAsRead(selectedEmail.value ?: return@launch)
-        }
+        viewModelScope.launch { repository.markEmailAsRead(selectedEmail.value ?: return@launch) }
     }
 
     fun unselectEmail() {
         _selectedEmailId.value = null
     }
 
-    fun toggleEmailStar(emailId: Long) {
+    fun toggleEmailStar(emailId: String) {
         viewModelScope.launch {
-            val email = (emailsUiState.value as? EmailsUiState.Success)?.emails?.find { it.id == emailId }
+            val email =
+                    (emailsUiState.value as? EmailsUiState.Success)?.emails?.find {
+                        it.id == emailId
+                    }
             email?.let { repository.toggleEmailStar(it) }
         }
     }
 
-    fun deleteEmail(emailId: Long) {
+    fun deleteEmail(emailId: String) {
         // TODO: Implementar eliminación de correos
     }
 }
 
 enum class EmailTab {
-    ALL, STARRED, UNREAD
+    ALL,
+    STARRED,
+    UNREAD
 }
 
 sealed interface EmailsUiState {
     data object Loading : EmailsUiState
     data class Success(val emails: List<Email>) : EmailsUiState
     data class Error(val message: String) : EmailsUiState
-} 
+}

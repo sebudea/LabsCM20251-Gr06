@@ -66,6 +66,7 @@ android {
 
 dependencies {
     val room_version = "2.6.1"
+    val moshi_version = "1.15.0"
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -81,10 +82,12 @@ dependencies {
     implementation("androidx.room:room-ktx:$room_version")
     kapt("androidx.room:room-compiler:$room_version")
     
-    // Retrofit
+    // Retrofit y Moshi
     implementation(libs.retrofit.core)
     implementation(libs.retrofit.converter.moshi)
     implementation(libs.okhttp.logging)
+    implementation("com.squareup.moshi:moshi-kotlin:$moshi_version")
+    kapt("com.squareup.moshi:moshi-kotlin-codegen:$moshi_version")
     
     // WorkManager
     implementation(libs.androidx.work.runtime.ktx)

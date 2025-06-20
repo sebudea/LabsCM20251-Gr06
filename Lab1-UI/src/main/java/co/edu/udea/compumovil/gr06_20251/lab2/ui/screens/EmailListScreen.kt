@@ -16,84 +16,70 @@ import co.edu.udea.compumovil.gr06_20251.lab2.ui.components.EmailTabs
 
 @Composable
 fun EmailListScreen(
-    uiState: EmailsUiState,
-    searchQuery: String,
-    currentTab: EmailTab,
-    onSearchQueryChange: (String) -> Unit,
-    onTabSelected: (EmailTab) -> Unit,
-    onEmailClick: (Long) -> Unit,
-    onEmailStar: (Long) -> Unit,
-    modifier: Modifier = Modifier
+        uiState: EmailsUiState,
+        searchQuery: String,
+        currentTab: EmailTab,
+        onSearchQueryChange: (String) -> Unit,
+        onTabSelected: (EmailTab) -> Unit,
+        onEmailClick: (String) -> Unit,
+        onEmailStar: (String) -> Unit,
+        modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier.fillMaxSize()
-    ) {
+    Column(modifier = modifier.fillMaxSize()) {
         EmailSearchBar(
-            query = searchQuery,
-            onQueryChange = onSearchQueryChange,
-            modifier = Modifier.padding(16.dp)
+                query = searchQuery,
+                onQueryChange = onSearchQueryChange,
+                modifier = Modifier.padding(16.dp)
         )
 
-        EmailTabs(
-            selectedTab = currentTab,
-            onTabSelected = onTabSelected
-        )
+        EmailTabs(selectedTab = currentTab, onTabSelected = onTabSelected)
 
         when (uiState) {
             is EmailsUiState.Loading -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator()
                 }
             }
             is EmailsUiState.Success -> {
                 if (uiState.emails.isEmpty()) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Text(
-                            text = when (currentTab) {
-                                EmailTab.ALL -> stringResource(R.string.no_emails)
-                                EmailTab.STARRED -> stringResource(R.string.no_starred_emails)
-                                EmailTab.UNREAD -> stringResource(R.string.no_unread_emails)
-                            },
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                text =
+                                        when (currentTab) {
+                                            EmailTab.ALL -> stringResource(R.string.no_emails)
+                                            EmailTab.STARRED ->
+                                                    stringResource(R.string.no_starred_emails)
+                                            EmailTab.UNREAD ->
+                                                    stringResource(R.string.no_unread_emails)
+                                        },
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 } else {
                     LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        items(
-                            items = uiState.emails,
-                            key = { it.id }
-                        ) { email ->
+                        items(items = uiState.emails, key = { it.id }) { email ->
                             EmailItem(
-                                email = email,
-                                onEmailClick = { onEmailClick(email.id) },
-                                onStarClick = { onEmailStar(email.id) }
+                                    email = email,
+                                    onEmailClick = { onEmailClick(email.id) },
+                                    onStarClick = { onEmailStar(email.id) }
                             )
                         }
                     }
                 }
             }
             is EmailsUiState.Error -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text(
-                        text = stringResource(R.string.error_loading_emails),
-                        color = MaterialTheme.colorScheme.error
+                            text = stringResource(R.string.error_loading_emails),
+                            color = MaterialTheme.colorScheme.error
                     )
                 }
             }
         }
     }
-} 
+}
